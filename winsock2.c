@@ -5,17 +5,13 @@
 
 #ifdef __linux__
 
-#include "winsock2.h"
-#include "ws2tcpip.h"
-#include "mswsock.h"
+#include "winsock2_api.h"
 #include <pthread.h>
-#include <sys/select.h>
-#include <sys/time.h>
 #include <sys/eventfd.h>
 #include <limits.h>
 
-/* Thread-local storage for last error */
-static __thread int g_wsa_last_error = 0;
+/* Thread-local storage for last error (non-static so other files can access) */
+__thread int g_wsa_last_error = 0;
 
 /* Initialization counter */
 static int g_wsa_init_count = 0;
@@ -195,23 +191,8 @@ int WSAAPI ioctlsocket(SOCKET s, long cmd, unsigned long* argp)
 
 /* Note: send, recv, sendto, recvfrom available as POSIX functions */
 
-/* ============================================================================
- * FD_SET Helper Functions
- * ============================================================================ */
-
-int __WSA_FD_ISSET(SOCKET fd, fd_set* set)
-{
-    unsigned int i;
-
-    for (i = 0; i < set->fd_count; i++) {
-        if (set->fd_array[i] == fd) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-/* Note: select() available as POSIX function.
+/* Note: FD_ISSET, FD_SET, FD_CLR, FD_ZERO available as POSIX macros from sys/select.h
+ * select() available as POSIX function.
  * Name resolution functions (gethostbyname, gethostbyaddr, gethostname,
  * getservbyname, getservbyport, getprotobyname, getprotobynumber) are
  * available as POSIX functions and can be used directly. */

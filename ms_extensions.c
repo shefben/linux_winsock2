@@ -5,13 +5,11 @@
 
 #ifdef __linux__
 
-#include "winsock2.h"
+#include "winsock2_api.h"
 #include "ws2tcpip.h"
 #include "mswsock.h"
 #include <sys/sendfile.h>
 #include <sys/stat.h>
-
-extern __thread int g_wsa_last_error;
 
 /* ============================================================================
  * AcceptEx Implementation

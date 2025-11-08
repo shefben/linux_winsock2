@@ -5,9 +5,7 @@
 
 #ifdef __linux__
 
-#include "winsock2.h"
-#include "ws2tcpip.h"
-#include "mswsock.h"
+#include "winsock2_api.h"
 #include <pthread.h>
 #include <sys/uio.h>
 

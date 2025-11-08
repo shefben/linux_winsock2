@@ -5,7 +5,7 @@
 
 #ifdef __linux__
 
-#include "winsock2.h"
+#include "winsock2_api.h"
 #include "ws2tcpip.h"
 #include <wchar.h>
 #include <locale.h>

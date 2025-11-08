@@ -1,13 +1,7 @@
-/*
- * mswsock.h - Microsoft-specific Winsock extensions
- * Compatible header for compiling Windows socket applications on Linux
- */
-
 #ifndef _MSWSOCK_H
 #define _MSWSOCK_H
 
 #include "winsock2.h"
-#include <sys/sendfile.h>
 
 #ifdef __linux__
 
@@ -15,10 +9,7 @@
 extern "C" {
 #endif
 
-/* ============================================================================
- * GUIDs for Extension Functions
- * ============================================================================ */
-
+/* GUIDs for extension functions */
 #define WSAID_ACCEPTEX \
     {0xb5367df1,0xcbac,0x11cf,{0x95,0xca,0x00,0x80,0x5f,0x48,0xa1,0x92}}
 #define WSAID_CONNECTEX \
@@ -36,10 +27,6 @@ extern "C" {
 #define WSAID_WSASENDMSG \
     {0xa441e712,0x754f,0x43ca,{0x84,0xa7,0x0d,0xee,0x44,0xcf,0x60,0x6d}}
 
-/* ============================================================================
- * Flags and Constants
- * ============================================================================ */
-
 /* TransmitFile flags */
 #define TF_DISCONNECT       0x01
 #define TF_REUSE_SOCKET     0x02
@@ -53,9 +40,10 @@ extern "C" {
 #define TP_ELEMENT_FILE     2
 #define TP_ELEMENT_EOP      4
 
-/* ============================================================================
- * Structures
- * ============================================================================ */
+/* Socket types for SO_PROTOCOL_INFO */
+#define SO_OPENTYPE             0x7008
+#define SO_SYNCHRONOUS_ALERT    0x10
+#define SO_SYNCHRONOUS_NONALERT 0x20
 
 /* TransmitFile structure */
 typedef struct _TRANSMIT_FILE_BUFFERS {
@@ -78,7 +66,16 @@ typedef struct _TRANSMIT_PACKETS_ELEMENT {
     };
 } TRANSMIT_PACKETS_ELEMENT, *PTRANSMIT_PACKETS_ELEMENT, *LPTRANSMIT_PACKETS_ELEMENT;
 
-/* RIO (Registered I/O) structures - stubs */
+typedef LARGE_INTEGER LONGLONG;
+
+/* WSABUF for control data */
+typedef struct _WSACMSGHDR {
+    size_t cmsg_len;
+    int cmsg_level;
+    int cmsg_type;
+} WSACMSGHDR, *PWSACMSGHDR, *LPWSACMSGHDR;
+
+/* RIO (Registered I/O) structures */
 typedef struct _RIO_BUF {
     DWORD BufferId;
     DWORD Offset;
@@ -109,10 +106,7 @@ typedef struct _RIO_NOTIFICATION_COMPLETION {
     };
 } RIO_NOTIFICATION_COMPLETION, *PRIO_NOTIFICATION_COMPLETION;
 
-/* ============================================================================
- * Function Pointer Types
- * ============================================================================ */
-
+/* Function pointer types for extension functions */
 typedef BOOL (WINAPI *LPFN_ACCEPTEX)(
     SOCKET sListenSocket,
     SOCKET sAcceptSocket,
@@ -188,10 +182,7 @@ typedef INT (WINAPI *LPFN_WSASENDMSG)(
     LPWSAOVERLAPPED_COMPLETION_ROUTINE lpCompletionRoutine
 );
 
-/* ============================================================================
- * Direct Function Declarations
- * ============================================================================ */
-
+/* Direct function declarations (non-function pointer versions) */
 BOOL WINAPI AcceptEx(
     SOCKET sListenSocket,
     SOCKET sAcceptSocket,
@@ -250,7 +241,20 @@ BOOL WINAPI TransmitPackets(
     DWORD dwFlags
 );
 
-/* Completion port functions */
+/* Helper function to retrieve extension function pointers */
+int WSAAPI WSAGetExtensionFunctionPointer(
+    SOCKET s,
+    const GUID* lpGuid,
+    void** lpfnFunction
+);
+
+/* Additional Mswsock-specific structures */
+typedef struct _WSATHREADID {
+    HANDLE ThreadHandle;
+    DWORD_PTR Reserved;
+} WSATHREADID, *PWSATHREADID, *LPWSATHREADID;
+
+/* Completion port types */
 typedef HANDLE (WINAPI *LPFN_CREATEIOCOMPLETIONPORT)(
     HANDLE FileHandle,
     HANDLE ExistingCompletionPort,
@@ -273,6 +277,7 @@ typedef BOOL (WINAPI *LPFN_POSTQUEUEDCOMPLETIONSTATUS)(
     LPOVERLAPPED lpOverlapped
 );
 
+/* Completion port functions */
 HANDLE WINAPI CreateIoCompletionPort(
     HANDLE FileHandle,
     HANDLE ExistingCompletionPort,
@@ -304,13 +309,30 @@ BOOL WINAPI GetQueuedCompletionStatusEx(
     BOOL fAlertable
 );
 
+/* Service provider interface */
+#define NSP_NOTIFY_IMMEDIATELY   0x00000001
+#define NSP_NOTIFY_HWND          0x00000002
+#define NSP_NOTIFY_EVENT         0x00000004
+#define NSP_NOTIFY_PORT          0x00000008
+#define NSP_NOTIFY_APC           0x00000010
+
+/* Service install flags */
+#define SERVICE_MULTIPLE         0x00000001
+
+/* Name space provider info */
+#define NSPROTO_IPX      1000
+#define NSPROTO_SPX      1256
+#define NSPROTO_SPXII    1257
+
+/* Address family types for name space providers */
+#define AF_12844    AF_12844
+#define AF_ATM      AF_ATM
+#define AF_NETBIOS  AF_NETBIOS
+
 #ifdef __cplusplus
 }
 #endif
 
-#else
-/* On Windows, include the real mswsock.h */
-#include <mswsock.h>
-#endif
+#endif /* __linux__ */
 
 #endif /* _MSWSOCK_H */
