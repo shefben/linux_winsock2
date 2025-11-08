@@ -1,0 +1,11 @@
+# Build artifacts
+*.o
+*.a
+*.so
+test_winsock
+test_winsock1
+
+# Editor files
+*.swp
+*~
+.DS_Store
