@@ -591,40 +591,9 @@ HANDLE WSAAPI WSAAsyncGetHostByAddr(HANDLE hWnd, unsigned int wMsg,
     return handle;
 }
 
-/* Stubs for other async functions */
-HANDLE WSAAPI WSAAsyncGetServByName(HANDLE hWnd, unsigned int wMsg,
-                                    const char* name, const char* proto,
-                                    char* buf, int buflen)
-{
-    (void)hWnd; (void)wMsg; (void)name; (void)proto; (void)buf; (void)buflen;
-    g_wsa_last_error = 0;
-    return (HANDLE)(intptr_t)g_async_handle_counter++;
-}
-
-HANDLE WSAAPI WSAAsyncGetServByPort(HANDLE hWnd, unsigned int wMsg,
-                                    int port, const char* proto,
-                                    char* buf, int buflen)
-{
-    (void)hWnd; (void)wMsg; (void)port; (void)proto; (void)buf; (void)buflen;
-    g_wsa_last_error = 0;
-    return (HANDLE)(intptr_t)g_async_handle_counter++;
-}
-
-HANDLE WSAAPI WSAAsyncGetProtoByName(HANDLE hWnd, unsigned int wMsg,
-                                     const char* name, char* buf, int buflen)
-{
-    (void)hWnd; (void)wMsg; (void)name; (void)buf; (void)buflen;
-    g_wsa_last_error = 0;
-    return (HANDLE)(intptr_t)g_async_handle_counter++;
-}
-
-HANDLE WSAAPI WSAAsyncGetProtoByNumber(HANDLE hWnd, unsigned int wMsg,
-                                       int number, char* buf, int buflen)
-{
-    (void)hWnd; (void)wMsg; (void)number; (void)buf; (void)buflen;
-    g_wsa_last_error = 0;
-    return (HANDLE)(intptr_t)g_async_handle_counter++;
-}
+/* Note: WSAAsyncGetServByName, WSAAsyncGetServByPort, WSAAsyncGetProtoByName,
+ * and WSAAsyncGetProtoByNumber are implemented in wsock32.c for Winsock 1.1 compatibility.
+ * For Winsock 2.2, these functions are deprecated in favor of getaddrinfo/getnameinfo. */
 
 int WSAAPI WSACancelAsyncRequest(HANDLE hAsyncTaskHandle)
 {

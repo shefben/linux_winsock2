@@ -68,6 +68,11 @@ typedef union _LARGE_INTEGER {
 #define PASCAL
 #define CALLBACK
 
+/* Winsock helper macros */
+#define MAKEWORD(a,b) ((WORD)(((BYTE)(a))|(((WORD)((BYTE)(b)))<<8)))
+#define LOBYTE(w) ((BYTE)(w))
+#define HIBYTE(w) ((BYTE)(((WORD)(w)>>8)&0xFF))
+
 #endif /* _WINDEF_ */
 
 #ifdef __cplusplus
